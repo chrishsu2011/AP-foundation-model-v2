@@ -1,4 +1,4 @@
-name: allen_env
+name: AP_FOUNDATION_MODEL
 channels:
   - default
 dependencies:
