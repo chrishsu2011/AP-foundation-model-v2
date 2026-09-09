@@ -1,0 +1,16 @@
+name: allen_env
+channels:
+  - default
+dependencies:
+  - python=3.12
+  - pip
+  - numpy
+  - scipy
+  - h5py
+  - matplotlib
+  - python-dotenv
+  - jupyterlab
+  - ipykernel
+  - pip:
+      - torch --index-url https://download.pytorch.org/whl/cu126
+
