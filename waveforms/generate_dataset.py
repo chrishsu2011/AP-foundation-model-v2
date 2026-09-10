@@ -7,7 +7,7 @@ from brian2 import ms
 from hh_waveform_simulation import simulate_batch
 
 # Dataset settings
-NUMBER_OF_WAVEFORMS = 1000
+NUMBER_OF_WAVEFORMS = 100
 BATCH_SIZE = 100
 
 DURATION = 50 * ms
@@ -15,7 +15,7 @@ SIMULATION_DT = 0.05 * ms
 
 RANDOM_SEED = 42
 
-OUTPUT_PATH = Path(__file__).parent / "hh_dataset.h5"
+OUTPUT_PATH = Path(__file__).parent / "hh_dataset_1ms.h5"
 
 
 PARAMETER_UNITS = {
