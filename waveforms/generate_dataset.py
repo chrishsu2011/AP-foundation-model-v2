@@ -7,7 +7,7 @@ from brian2 import ms
 from hh_waveform_simulation import simulate_batch
 
 # Dataset settings
-NUMBER_OF_WAVEFORMS = 100000
+NUMBER_OF_WAVEFORMS = 10000
 BATCH_SIZE = 1000
 
 DURATION = 50 * ms
