@@ -94,7 +94,7 @@ def simulate_batch(batch_size, rng, duration=50 * ms, simulation_dt=0.05 * ms):
     )
 
     stimulus_values[
-        int(10 * ms / simulation_dt):int(40 * ms / simulation_dt)
+        int(10 * ms / simulation_dt):int(11 * ms / simulation_dt)
     ] = 1.0
 
     stimulus_gate = TimedArray(stimulus_values, dt=simulation_dt,)
