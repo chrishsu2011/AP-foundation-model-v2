@@ -1,7 +1,8 @@
 import numpy as np
 from brian2 import *
+from scipy.optimize import brentq
 
-prefs.codegen.target = "numpy"
+prefs.codegen.target = "cython"
 
 EQUATIONS = """
 dv/dt = (
@@ -73,6 +74,48 @@ b_n_A  : 1
 b_n_Vh : 1
 b_n_k  : 1
 """
+
+# WORK IN PROGRESS
+def _exprel(x):
+    return np.where(np.abs(x) < 1e-6, 1.0 - x / 2, x / (np.exp(x) - 1))
+
+def find_vrest(p):
+    """Solve for resting potential (volts) given a parameter dict."""
+    def net_current(V_mV):
+        am = p['a_m_A'] * p['a_m_k'] * _exprel(-(V_mV - p['a_m_Vh']) / p['a_m_k'])
+        bm = p['b_m_A'] * np.exp(-(V_mV - p['b_m_Vh']) / p['b_m_k'])
+        m = am / (am + bm)
+        ah = p['a_h_A'] * np.exp(-(V_mV - p['a_h_Vh']) / p['a_h_k'])
+        bh = p['b_h_A'] / (1 + np.exp(-(V_mV - p['b_h_Vh']) / p['b_h_k']))
+        h = ah / (ah + bh)
+        an = p['a_n_A'] * p['a_n_k'] * _exprel(-(V_mV - p['a_n_Vh']) / p['a_n_k'])
+        bn = p['b_n_A'] * np.exp(-(V_mV - p['b_n_Vh']) / p['b_n_k'])
+        n = an / (an + bn)
+        V = V_mV * 1e-3
+        return (p['g_Na'] * m**3 * h * (V - p['E_Na'])
+              + p['g_K']  * n**4     * (V - p['E_K'])
+              + p['g_L']             * (V - p['E_L']))
+    return brentq(net_current, -80, -40) * 1e-3
+
+"""
+    for i in range(batch_size):
+        p = {name: float(getattr(group, name)[i])
+             for name in ['a_m_A','a_m_Vh','a_m_k','b_m_A','b_m_Vh','b_m_k',
+                          'a_h_A','a_h_Vh','a_h_k','b_h_A','b_h_Vh','b_h_k',
+                          'a_n_A','a_n_Vh','a_n_k','b_n_A','b_n_Vh','b_n_k']}
+        p['g_Na'] = float(group.g_Na[i] / (siemens / meter**2))
+        p['g_K']  = float(group.g_K[i]  / (siemens / meter**2))
+        p['g_L']  = float(group.g_L[i]  / (siemens / meter**2))
+        p['E_Na'] = float(group.E_Na[i] / volt)
+        p['E_K']  = float(group.E_K[i]  / volt)
+        p['E_L']  = float(group.E_L[i]  / volt)
+        try:
+            group.v[i] = find_vrest(p) * volt
+        except ValueError:
+            group.v[i] = -65 * mV
+"""
+
+
 
 def simulate_batch(batch_size, rng, duration=50 * ms, simulation_dt=0.05 * ms):
     """
