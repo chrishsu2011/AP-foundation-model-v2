@@ -7,7 +7,7 @@ import random
 random.seed(42)
 idx = np.random.choice(100, 10, replace=False)
 
-with h5py.File("hh_dataset.h5", "r") as f:
+with h5py.File("waveforms/hh_dataset_1ms.h5", "r") as f:
     time_s = f["time"][:]          # (1000,) in seconds
     voltage = f["voltage"][sorted(idx)]   # HDF5 requires sorted indices
     amp = f["stimulus/amplitude"][sorted(idx)] # in A/m²
@@ -18,6 +18,7 @@ voltage_mV = voltage * 1e3        # → mV
 fig, axes = plt.subplots(2, 5, figsize=(18, 6), sharex=True, sharey=True)
 
 for i, ax in enumerate(axes.flat):
+    ax.axvspan(10, 11, color="grey", alpha=0.2) # where stimulus is 
     ax.plot(time_ms, voltage_mV[i], linewidth=0.8)
     ax.set_title(f"#{i}  I={amp[i]:.3f} A/m²", fontsize=9)
     if i >= 5:
