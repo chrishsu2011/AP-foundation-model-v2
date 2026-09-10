@@ -1,0 +1,7 @@
+conda env create -f environment.yml
+
+plots show current density rather than than current because thats how it was in hodgkin huxley
+
+note that resting voltage is initialized to -65mV but the actual equillibrium potential may need to be calculated to prevent the pre depolarization bump
+
+
