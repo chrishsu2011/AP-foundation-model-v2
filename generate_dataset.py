@@ -6,34 +6,9 @@ from brian2 import ms
 
 from hh_waveform_simulation import simulate_batch
 
-
-# preview of file structure
-"""
-hh_dataset.h5
-├── time                         shape (T,)
-├── voltage                      shape (N, T)
-├── stimulus
-│   ├── waveform                 shape (T,)
-│   └── amplitude                shape (N,)
-├── parameters
-│   ├── g_Na                     shape (N,)
-│   ├── g_K                      shape (N,)
-│   ├── g_L                      shape (N,)
-│   ├── E_Na                     shape (N,)
-│   ├── E_K                      shape (N,)
-│   ├── E_L                      shape (N,)
-│   ├── Cm                       shape (N,)
-│   └── ...rate parameters
-├── qc
-│   ├── valid                    shape (N,)
-│   └── spike_count              shape (N,)
-└── split                        shape (N,)
-"""
-
-
 # Dataset settings
-NUMBER_OF_WAVEFORMS = 100_000
-BATCH_SIZE = 1_000
+NUMBER_OF_WAVEFORMS = 1000
+BATCH_SIZE = 100
 
 DURATION = 50 * ms
 SIMULATION_DT = 0.05 * ms
@@ -187,3 +162,26 @@ def create_dataset():
 
 if __name__ == "__main__":
     create_dataset()
+
+# preview of file structure
+"""
+hh_dataset.h5
+├── time                         shape (T,)
+├── voltage                      shape (N, T)
+├── stimulus
+│   ├── waveform                 shape (T,)
+│   └── amplitude                shape (N,)
+├── parameters
+│   ├── g_Na                     shape (N,)
+│   ├── g_K                      shape (N,)
+│   ├── g_L                      shape (N,)
+│   ├── E_Na                     shape (N,)
+│   ├── E_K                      shape (N,)
+│   ├── E_L                      shape (N,)
+│   ├── Cm                       shape (N,)
+│   └── ...rate parameters
+├── qc
+│   ├── valid                    shape (N,)
+│   └── spike_count              shape (N,)
+└── split                        shape (N,)
+"""

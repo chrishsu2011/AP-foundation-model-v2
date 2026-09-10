@@ -11,6 +11,7 @@ dependencies:
   - python-dotenv
   - jupyterlab
   - ipykernel
+  - brian2
   - pip:
       - torch --index-url https://download.pytorch.org/whl/cu126
 
