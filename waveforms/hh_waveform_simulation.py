@@ -97,25 +97,6 @@ def find_vrest(p):
               + p['g_L']             * (V - p['E_L']))
     return brentq(net_current, -80, -40) * 1e-3
 
-"""
-    for i in range(batch_size):
-        p = {name: float(getattr(group, name)[i])
-             for name in ['a_m_A','a_m_Vh','a_m_k','b_m_A','b_m_Vh','b_m_k',
-                          'a_h_A','a_h_Vh','a_h_k','b_h_A','b_h_Vh','b_h_k',
-                          'a_n_A','a_n_Vh','a_n_k','b_n_A','b_n_Vh','b_n_k']}
-        p['g_Na'] = float(group.g_Na[i] / (siemens / meter**2))
-        p['g_K']  = float(group.g_K[i]  / (siemens / meter**2))
-        p['g_L']  = float(group.g_L[i]  / (siemens / meter**2))
-        p['E_Na'] = float(group.E_Na[i] / volt)
-        p['E_K']  = float(group.E_K[i]  / volt)
-        p['E_L']  = float(group.E_L[i]  / volt)
-        try:
-            group.v[i] = find_vrest(p) * volt
-        except ValueError:
-            group.v[i] = -65 * mV
-"""
-
-
 
 def simulate_batch(batch_size, rng, duration=50 * ms, simulation_dt=0.05 * ms):
     """
@@ -167,7 +148,8 @@ def simulate_batch(batch_size, rng, duration=50 * ms, simulation_dt=0.05 * ms):
     group.E_L = additive_jitter(-54.4, 1) * mV
 
     group.Cm = (multiply_jitter(1.0, 0.05)* ufarad / cm**2)
-    group.I_amp = (rng.uniform(8, 14, batch_size)* uamp / cm**2)
+    #group.I_amp = (rng.uniform(8, 14, batch_size)* uamp / cm**2)
+    group.I_amp = 10 * uamp / cm**2 # each neuron receives 10 microamp
 
     # Rate-function parameters
     group.a_m_A = multiply_jitter(0.1)
@@ -195,7 +177,38 @@ def simulate_batch(batch_size, rng, duration=50 * ms, simulation_dt=0.05 * ms):
     group.b_n_k = multiply_jitter(80)
 
     # Initial conditions
-    group.v = -65 * mV
+    # Calculate the zero-input resting voltage for each neuron.
+    rate_parameter_names = [
+        "a_m_A", "a_m_Vh", "a_m_k",
+        "b_m_A", "b_m_Vh", "b_m_k",
+        "a_h_A", "a_h_Vh", "a_h_k",
+        "b_h_A", "b_h_Vh", "b_h_k",
+        "a_n_A", "a_n_Vh", "a_n_k",
+        "b_n_A", "b_n_Vh", "b_n_k",
+    ]
+
+    resting_voltages = np.empty(batch_size)
+
+    for i in range(batch_size):
+        p = {
+            name: float(getattr(group, name)[i])
+            for name in rate_parameter_names
+        }
+
+        p.update({
+            "g_Na": float(group.g_Na[i] / (siemens / meter**2)),
+            "g_K": float(group.g_K[i] / (siemens / meter**2)),
+            "g_L": float(group.g_L[i] / (siemens / meter**2)),
+            "E_Na": float(group.E_Na[i] / volt),
+            "E_K": float(group.E_K[i] / volt),
+            "E_L": float(group.E_L[i] / volt),
+        })
+
+        resting_voltages[i] = find_vrest(p)
+
+    # Initialize voltage and gates at equilibrium
+    #group.v = -65 * mV
+    group.v = resting_voltages * volt
     group.m = "m_inf"
     group.h = "h_inf"
     group.n = "n_inf"
