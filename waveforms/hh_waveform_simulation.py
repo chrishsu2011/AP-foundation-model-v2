@@ -1,6 +1,6 @@
 import numpy as np
 from brian2 import *
-from scipy.optimize import brentq
+#from scipy.optimize import brentq
 
 prefs.codegen.target = "cython"
 
@@ -98,6 +98,45 @@ def find_vrest(p):
     return brentq(net_current, -80, -40) * 1e-3
 
 
+def find_vrest_batch(group, rate_parameter_names, batch_size):
+    """Vectorized resting-potential solve for all neurons at once."""
+    # Gather parameters as arrays
+    g_Na = np.asarray(group.g_Na / (siemens / meter**2))
+    g_K  = np.asarray(group.g_K  / (siemens / meter**2))
+    g_L  = np.asarray(group.g_L  / (siemens / meter**2))
+    E_Na = np.asarray(group.E_Na / volt)
+    E_K  = np.asarray(group.E_K  / volt)
+    E_L  = np.asarray(group.E_L  / volt)
+    p = {name: np.asarray(getattr(group, name), dtype=np.float64)
+         for name in rate_parameter_names}
+
+    def net_current(V_mV):
+        am = p['a_m_A'] * p['a_m_k'] * _exprel(-(V_mV - p['a_m_Vh']) / p['a_m_k'])
+        bm = p['b_m_A'] * np.exp(-(V_mV - p['b_m_Vh']) / p['b_m_k'])
+        m = am / (am + bm)
+        ah = p['a_h_A'] * np.exp(-(V_mV - p['a_h_Vh']) / p['a_h_k'])
+        bh = p['b_h_A'] / (1 + np.exp(-(V_mV - p['b_h_Vh']) / p['b_h_k']))
+        h = ah / (ah + bh)
+        an = p['a_n_A'] * p['a_n_k'] * _exprel(-(V_mV - p['a_n_Vh']) / p['a_n_k'])
+        bn = p['b_n_A'] * np.exp(-(V_mV - p['b_n_Vh']) / p['b_n_k'])
+        n = an / (an + bn)
+        V = V_mV * 1e-3
+        return (g_Na * m**3 * h * (V - E_Na)
+              + g_K  * n**4     * (V - E_K)
+              + g_L              * (V - E_L))
+
+    # Vectorized Newton's method (all neurons simultaneously)
+    V = np.full(batch_size, -65.0)  # initial guess in mV
+    for _ in range(50):
+        f = net_current(V)
+        dV = 0.01
+        df = (net_current(V + dV) - f) / dV  # numerical derivative
+        df = np.where(np.abs(df) < 1e-12, 1e-12, df)
+        V = V - f / df
+    return V * 1e-3  # return in volts
+
+
+
 def simulate_batch(batch_size, rng, duration=50 * ms, simulation_dt=0.05 * ms):
     """
     Simulate one batch of randomized Hodgkin-Huxley neurons.
@@ -187,24 +226,7 @@ def simulate_batch(batch_size, rng, duration=50 * ms, simulation_dt=0.05 * ms):
         "b_n_A", "b_n_Vh", "b_n_k",
     ]
 
-    resting_voltages = np.empty(batch_size)
-
-    for i in range(batch_size):
-        p = {
-            name: float(getattr(group, name)[i])
-            for name in rate_parameter_names
-        }
-
-        p.update({
-            "g_Na": float(group.g_Na[i] / (siemens / meter**2)),
-            "g_K": float(group.g_K[i] / (siemens / meter**2)),
-            "g_L": float(group.g_L[i] / (siemens / meter**2)),
-            "E_Na": float(group.E_Na[i] / volt),
-            "E_K": float(group.E_K[i] / volt),
-            "E_L": float(group.E_L[i] / volt),
-        })
-
-        resting_voltages[i] = find_vrest(p)
+    resting_voltages = find_vrest_batch(group, rate_parameter_names, batch_size)
 
     # Initialize voltage and gates at equilibrium
     #group.v = -65 * mV
