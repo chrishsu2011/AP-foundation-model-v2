@@ -15,13 +15,14 @@ DROPOUT = 0.1
 MAX_PATCHES = 128      # max sequence length (128 * 50 = 6400 samples)
 MASK_RATIO = 0.5   
 GRADIENT_CLIP = 1
+BATCH_SIZE = 64
 
 filepath = r"C:\Users\chris\Desktop\coding projects\AP-foundation-model-v2\waveforms\hh_dataset_1ms.h5"
 
 dataset = WaveformDataset(filepath)
 train_set, val_set = random_split(dataset, [0.8, 0.2])
-train_loader = DataLoader(train_set, batch_size=8, shuffle=True)
-val_loader = DataLoader(val_set, batch_size=8, shuffle=False)
+train_loader = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True)
+val_loader = DataLoader(val_set, batch_size=BATCH_SIZE, shuffle=False)
 
 print(torch.__version__)
 print(torch.cuda.is_available())
@@ -82,7 +83,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
 # ---
 
-num_epochs = 500
+num_epochs = 50
 
 train_losses = []
 val_losses = []
@@ -115,7 +116,7 @@ torch.save({
         "max_patches": MAX_PATCHES,
         "mask_ratio": MASK_RATIO,
         "lr": 1e-4,
-        "batch_size": 8,
+        "batch_size": BATCH_SIZE,
     },
 
 "voltage_mean": dataset.voltage_mean,
