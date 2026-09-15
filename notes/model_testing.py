@@ -17,7 +17,8 @@ MASK_RATIO = 0.5
 GRADIENT_CLIP = 1
 BATCH_SIZE = 64
 
-filepath = r"C:\Users\chris\Desktop\coding projects\AP-foundation-model-v2\waveforms\hh_dataset_1ms.h5"
+import os
+filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "waveforms", "hh_dataset_1ms.h5")
 
 dataset = WaveformDataset(filepath)
 train_set, val_set = random_split(dataset, [0.8, 0.2])
