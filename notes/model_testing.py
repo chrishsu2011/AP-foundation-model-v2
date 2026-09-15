@@ -3,6 +3,7 @@ from model.model_mae import WaveformMAE
 from model.data import WaveformDataset
 from torch.utils.data import DataLoader
 from torch.utils.data import random_split
+import os
 
 PATCH_SIZE = 50        # samples per patch: 50 * 0.01 ms = 0.5 ms of signal
 ENCODER_DIM = 64       # hidden dimension of the encoder transformer
@@ -16,8 +17,8 @@ MAX_PATCHES = 128      # max sequence length (128 * 50 = 6400 samples)
 MASK_RATIO = 0.5   
 GRADIENT_CLIP = 1
 BATCH_SIZE = 64
+LR = 1e-4
 
-import os
 filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "waveforms", "hh_dataset_1ms.h5")
 
 dataset = WaveformDataset(filepath)
@@ -80,7 +81,7 @@ def run_epoch(loader, training):
     return total_loss / num_batches
 
 
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 
 # ---
 
@@ -96,7 +97,7 @@ for epoch in range(num_epochs):
     train_losses.append(train_loss)
     val_losses.append(val_loss)
 
-    print(f"Epoch {epoch+1:>3}/{num_epochs} | MSE: {train_loss:.6f}")
+    print(f"Epoch {epoch+1:>3}/{num_epochs} | train: {train_loss:.6f} | val: {val_loss:.6f}")
 
 torch.save({
 "model": model.state_dict(),
@@ -116,7 +117,7 @@ torch.save({
         "dropout": DROPOUT,
         "max_patches": MAX_PATCHES,
         "mask_ratio": MASK_RATIO,
-        "lr": 1e-4,
+        "lr": LR,
         "batch_size": BATCH_SIZE,
     },
 
