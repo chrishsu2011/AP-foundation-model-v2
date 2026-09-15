@@ -6,3 +6,6 @@ __pycache__/
 .DS_Store
 .vscode/
 /Claude outputs
+/archive
+test.slurm
+/waveforms/hh_dataset_1ms.h5
