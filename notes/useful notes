@@ -4,4 +4,13 @@ plots show current density rather than than current because thats how it was in 
 
 note that resting voltage is initialized to -65mV but the actual equillibrium potential may need to be calculated to prevent the pre depolarization bump
 
+the approach is to use masked autoencoders
+- convolutional
+- transformer
+
+read He et al 2022
+
+layernorm attempts to solve the exploding gradient and vanishing gradient problem
+the exploding gradient and vanishing gradient problem happens because of how backprop works
+
 
