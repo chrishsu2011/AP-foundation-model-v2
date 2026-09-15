@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data import random_split
 import os
 
-PATCH_SIZE = 50        # samples per patch: 50 * 0.01 ms = 0.5 ms of signal
+PATCH_SIZE = 100       # samples per patch: 50 * 0.01 ms = 0.5 ms of signal
 ENCODER_DIM = 64       # hidden dimension of the encoder transformer
 ENCODER_HEADS = 4      # attention heads in encoder
 ENCODER_LAYERS = 3     # depth of encoder

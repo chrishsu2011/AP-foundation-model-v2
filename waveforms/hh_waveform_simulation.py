@@ -79,8 +79,8 @@ b_n_k  : 1
 def _exprel(x):
     return np.where(np.abs(x) < 1e-6, 1.0 - x / 2, x / (np.exp(x) - 1))
 
+"""
 def find_vrest(p):
-    """Solve for resting potential (volts) given a parameter dict."""
     def net_current(V_mV):
         am = p['a_m_A'] * p['a_m_k'] * _exprel(-(V_mV - p['a_m_Vh']) / p['a_m_k'])
         bm = p['b_m_A'] * np.exp(-(V_mV - p['b_m_Vh']) / p['b_m_k'])
@@ -96,7 +96,7 @@ def find_vrest(p):
               + p['g_K']  * n**4     * (V - p['E_K'])
               + p['g_L']             * (V - p['E_L']))
     return brentq(net_current, -80, -40) * 1e-3
-
+"""
 
 def find_vrest_batch(group, rate_parameter_names, batch_size):
     """Vectorized resting-potential solve for all neurons at once."""
