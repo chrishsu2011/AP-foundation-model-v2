@@ -1,6 +1,6 @@
 name: AP_FOUNDATION_MODEL
 channels:
-  - default
+  - conda-forge
 dependencies:
   - python=3.12
   - pip
@@ -11,7 +11,6 @@ dependencies:
   - python-dotenv
   - jupyterlab
   - ipykernel
-  - brian2
   - pip:
-      - torch --index-url https://download.pytorch.org/whl/cu126
+      - brian2
 
