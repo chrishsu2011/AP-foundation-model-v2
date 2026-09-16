@@ -14,7 +14,7 @@ DECODER_HEADS = 4
 DECODER_LAYERS = 1
 DROPOUT = 0.1
 MAX_PATCHES = 128      # max sequence length (128 * 50 = 6400 samples)
-MASK_RATIO = 0.5   
+MASK_RATIO = 0.75   
 GRADIENT_CLIP = 1
 BATCH_SIZE = 64
 LR = 1e-4
@@ -85,7 +85,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 
 # ---
 
-num_epochs = 50
+num_epochs = 100
 
 train_losses = []
 val_losses = []
