@@ -25,8 +25,8 @@ import torch.nn as nn
 PATCH_SIZE = 50        # samples per patch: 50 * 0.01 ms = 0.5 ms of signal
 ENCODER_DIM = 64       # hidden dimension of the encoder transformer
 ENCODER_HEADS = 4      # attention heads in encoder
-ENCODER_LAYERS = 3     # depth of encoder
-DECODER_DIM = 32       # decoder is intentionally smaller — it's just a training tool
+ENCODER_LAYERS = 1     # depth of encoder
+DECODER_DIM = 32      
 DECODER_HEADS = 4
 DECODER_LAYERS = 1
 DROPOUT = 0.1
