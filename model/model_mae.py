@@ -22,17 +22,16 @@ import torch
 import torch.nn as nn
 
 # --- Defaults -----------------------------------------------------------------
-PATCH_SIZE = 50        # samples per patch: 50 * 0.01 ms = 0.5 ms of signal
-ENCODER_DIM = 64       # hidden dimension of the encoder transformer
-ENCODER_HEADS = 4      # attention heads in encoder
-ENCODER_LAYERS = 1     # depth of encoder
-DECODER_DIM = 32      
-DECODER_HEADS = 4
-DECODER_LAYERS = 1
-DROPOUT = 0.1
-MAX_PATCHES = 128      # max sequence length (128 * 50 = 6400 samples)
-MASK_RATIO = 0.75      # fraction of patches to mask during training
-
+#PATCH_SIZE = 50        # samples per patch: 50 * 0.01 ms = 0.5 ms of signal
+#ENCODER_DIM = 64       # hidden dimension of the encoder transformer
+#ENCODER_HEADS = 4      # attention heads in encoder
+#ENCODER_LAYERS = 1     # depth of encoder
+#DECODER_DIM = 32      
+#DECODER_HEADS = 4
+#DECODER_LAYERS = 1
+#DROPOUT = 0.1
+#MAX_PATCHES = 128      # max sequence length (128 * 50 = 6400 samples)
+#MASK_RATIO = 0.75      # fraction of patches to mask during training
 
 # --- Building blocks ----------------------------------------------------------
 
@@ -92,15 +91,15 @@ class TransformerBlock(nn.Module):
 class WaveformMAE(nn.Module):
     def __init__(
         self,
-        patch_size=PATCH_SIZE,
-        encoder_dim=ENCODER_DIM,
-        encoder_heads=ENCODER_HEADS,
-        encoder_layers=ENCODER_LAYERS,
-        decoder_dim=DECODER_DIM,
-        decoder_heads=DECODER_HEADS,
-        decoder_layers=DECODER_LAYERS,
-        dropout=DROPOUT,
-        max_patches=MAX_PATCHES,
+        patch_size,
+        encoder_dim,
+        encoder_heads,
+        encoder_layers,
+        decoder_dim,
+        decoder_heads,
+        decoder_layers,
+        dropout,
+        max_patches,
     ):
         super().__init__()
         self.patch_size = patch_size
@@ -229,7 +228,7 @@ class WaveformMAE(nn.Module):
 
     # --- Public API ------------------------------------------------------------
 
-    def forward(self, voltage, mask_ratio=MASK_RATIO):
+    def forward(self, voltage, mask_ratio):
         """Training forward pass.
 
         Parameters
